@@ -16,6 +16,9 @@
                 <flux:navbar.item icon="layout-grid" :href="route(RouteNameEnum::HOME)" :current="request()->routeIs(RouteNameEnum::HOME->value)" wire:navigate>
                     {{ trans('Dashboard') }}
                 </flux:navbar.item>
+                <flux:navbar.item icon="bug-ant" :href="route(RouteNameEnum::ISSUE)" wire:navigate>
+                    Issue
+                </flux:navbar.item>
             </flux:navbar>
 
             <flux:spacer />

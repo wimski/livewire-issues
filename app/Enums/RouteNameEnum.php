@@ -6,6 +6,8 @@ namespace App\Enums;
 
 enum RouteNameEnum: string
 {
+    case ISSUE = 'issue';
+
     case APPEARANCE_EDIT    = 'appearance.edit';
     case HOME               = 'home';
     case PROFILE_EDIT       = 'profile.edit';

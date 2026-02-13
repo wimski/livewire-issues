@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Enums\RouteNameEnum;
+use App\Livewire\Issue;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -32,4 +33,6 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
             ),
         )
         ->name(RouteNameEnum::TWO_FACTOR_SHOW);
+
+    Route::livewire('issue', Issue::class)->name(RouteNameEnum::ISSUE);
 });
