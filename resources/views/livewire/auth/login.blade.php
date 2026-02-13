@@ -1,5 +1,7 @@
 @php
     use App\Enums\RouteNameEnum;
+
+    $user = config('auth.development_users.0');
 @endphp
 <x-layouts::auth>
     <div class="flex flex-col gap-6">
@@ -15,7 +17,7 @@
             <flux:input
                 name="email"
                 :label="trans('Email address')"
-                :value="old('email')"
+                :value="app()->isLocal() ? $user['email'] : old('email')"
                 type="email"
                 required
                 autofocus
@@ -28,6 +30,7 @@
                 <flux:input
                     name="password"
                     :label="trans('Password')"
+                    :value="app()->isLocal() ? $user['password'] : ''"
                     type="password"
                     required
                     autocomplete="current-password"

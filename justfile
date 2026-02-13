@@ -18,8 +18,8 @@ destroy:
     @docker compose down --remove-orphans --volumes
 
 setup:
+    @docker compose run --rm cli composer install
     @just up
-    @docker compose exec app composer install
     @docker compose exec app sh -c 'grep -qE "^APP_KEY=.+$$" .env || php artisan key:generate'
     @docker compose exec app php artisan migrate
     @docker compose exec app php artisan db:seed
@@ -82,10 +82,3 @@ s3-bucket-fresh:
     mc anonymous set download $MINIO_ALIAS/$MINIO_BUCKET; \
     exit 0; \
     "
-
-modelNamespace := 'App\\Models'
-# Use single quotes to maintain
-# normal backslash escaping.
-model class namespace=modelNamespace:
-    @docker compose run --rm --remove-orphans cli php artisan make:model {{class}} --factory --migration
-    @docker compose run --rm --remove-orphans cli php artisan make:repository {{namespace}}\\{{class}}
