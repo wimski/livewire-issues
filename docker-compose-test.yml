@@ -1,0 +1,67 @@
+x-healthcheck: &healthcheck
+  interval: 5s
+  timeout: 5s
+  retries: 5
+
+services:
+  app-test:
+    build:
+      context: ./docker/local/php
+      dockerfile: Dockerfile
+      args:
+        - BASE_IMAGE=php:${PHP_VERSION}-fpm-alpine
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      database-test:
+        condition: service_healthy
+      store-test:
+        condition: service_healthy
+      s3-test:
+        condition: service_healthy
+
+  database-test:
+    image: postgres:alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USERNAME}
+      - POSTGRES_DB=${POSTGRES_DATABASE}
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USERNAME} -d ${POSTGRES_DATABASE}" ]
+      <<: [ *healthcheck ]
+
+  store-test:
+    image: redis:alpine
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      <<: [ *healthcheck ]
+
+  s3-test:
+    image: minio/minio:latest
+    environment:
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_REGION_NAME=${MINIO_REGION_NAME}
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: [ "CMD", "mc", "ready", "local" ]
+      <<: *healthcheck
+
+  s3-cli-test:
+    image: minio/mc:latest
+    depends_on:
+      s3-test:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set $MINIO_ALIAS http://minio-test:9000 $MINIO_ACCESS_KEY $MINIO_SECRET_KEY;
+      /usr/bin/mc rb --force --dangerous $MINIO_ALIAS;
+      /usr/bin/mc mb --ignore-existing $MINIO_ALIAS/$MINIO_BUCKET;
+      /usr/bin/mc anonymous set download $MINIO_ALIAS/$MINIO_BUCKET;
+      exit 0;
+      "
+
+networks:
+  default:
+    name: "${IDENTIFIER}-test-network"

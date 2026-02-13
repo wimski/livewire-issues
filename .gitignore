@@ -1,0 +1,13 @@
+.env
+.phpunit.result.cache
+/.phpunit.cache
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/vendor
+phpstan.neon
+phpunit.xml
+supervisord.pid

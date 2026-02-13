@@ -1,0 +1,55 @@
+@php
+    use App\Enums\RouteNameEnum;
+@endphp
+<x-layouts::auth>
+    <div class="flex flex-col gap-6">
+        <x-auth-header :title="trans('Reset password')" :description="trans('Please enter your new password below')" />
+
+        <!-- Session Status -->
+        <x-auth-session-status class="text-center" :status="session('status')" />
+
+        <form method="POST" action="{{ route(RouteNameEnum::PASSWORD_UPDATE) }}" class="flex flex-col gap-6">
+            @csrf
+            <!-- Token -->
+            <input type="hidden" name="token" value="{{ request()->route('token') }}">
+
+            <!-- Email Address -->
+            <flux:input
+                name="email"
+                value="{{ request('email') }}"
+                :label="trans('Email')"
+                type="email"
+                required
+                autocomplete="email"
+            />
+
+            <!-- Password -->
+            <flux:input
+                name="password"
+                :label="trans('Password')"
+                type="password"
+                required
+                autocomplete="new-password"
+                :placeholder="trans('Password')"
+                viewable
+            />
+
+            <!-- Confirm Password -->
+            <flux:input
+                name="password_confirmation"
+                :label="trans('Confirm password')"
+                type="password"
+                required
+                autocomplete="new-password"
+                :placeholder="trans('Confirm password')"
+                viewable
+            />
+
+            <div class="flex items-center justify-end">
+                <flux:button type="submit" variant="primary" class="w-full" data-test="reset-password-button">
+                    {{ trans('Reset password') }}
+                </flux:button>
+            </div>
+        </form>
+    </div>
+</x-layouts::auth>
