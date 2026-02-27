@@ -4,19 +4,30 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Concerns\Livewire\WithSessionPagination;
 use Illuminate\Contracts\View\View;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Session;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 
 class Issue extends Component
 {
+    use WithSessionPagination;
+
     #[Session]
     #[Url(history: true, except: '')]
     public string $value = '';
 
     public function render(): View
     {
-        return view('livewire.issue');
+        return view('livewire.issue', [
+            'items' => $this->getItems(),
+        ]);
+    }
+
+    protected function getItems(): LengthAwarePaginator
+    {
+        return new LengthAwarePaginator(range(1, 5), 100, 5);
     }
 }

@@ -4,4 +4,5 @@
         <flux:select.option value="a">A</flux:select.option>
         <flux:select.option value="b">B</flux:select.option>
     </flux:select>
+    <flux:pagination :paginator="$items" />
 </div>
